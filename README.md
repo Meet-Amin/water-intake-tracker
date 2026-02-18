@@ -1,57 +1,206 @@
-# AI Water Intake Tracker
+# 💧 AI Water Intake Tracker
 
-## Overview
-- Hydration monitoring app that blends a Streamlit dashboard, FastAPI API, and a LangChain/OpenAI assistant.
-- Tracks intake, reminders, mood/habit notes, and exposes analytics with CSV import/export and shareable reflections.
-- Keeps the architecture simple yet complete so you can run the UI or API locally, explore the LLM prompts, and see SQLite persistence in action.
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-App-red)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-teal)
+![OpenAI](https://img.shields.io/badge/OpenAI-LLM-black)
+![SQLite](https://img.shields.io/badge/Database-SQLite-lightgrey)
 
-## Architecture (diagram)
+An AI-powered hydration tracking app built with **Streamlit**, **FastAPI**, and **LangChain + OpenAI**.  
+It helps users track daily water intake, habits, and mood while generating smart AI reflections.
+
+This project demonstrates full-stack AI app engineering with UI, API, database persistence, and an LLM agent.
+
+---
+## 🚀 Features
+
+- 💧 Daily hydration tracking
+- 🎯 Goal setting & reminders
+- 📊 Intake analytics dashboard
+- 😊 Mood & habit journaling
+- 🤖 AI-generated reflections
+- 📁 CSV import/export
+- ⚡ FastAPI integration endpoints
+- 💾 SQLite persistent storage
+- 🧠 LangChain + OpenAI agent
+
+---
+
+## 🧠 Architecture
+
 ```mermaid
 flowchart LR
-    UI[Streamlit dashboard]
-    Agent[WaterIntakeAgent (LangChain + OpenAI)]
-    DB[(SQLite: water_tracker.db)]
-    API[FastAPI (`src/api.py`)]
+    User((User))
+    UI["Streamlit Dashboard"]
+    Agent["WaterIntakeAgent<br>(LangChain + OpenAI)"]
+    DB["SQLite Database"]
+    API["FastAPI Backend"]
+    Logger["Logger"]
 
+    User --> UI
     UI --> Agent
     UI --> DB
     UI --> API
     API --> Agent
     API --> DB
+    API --> Logger
     Agent --> DB
 ```
 
-## Components
-1. **Streamlit dashboard (`dashboard.py`)** – central UI for goal settings, reminders, weather-aware hydration cues, streak/badge insights, mood/habit journals, intake history visualizations, CSV import/export, shareable updates, and AI reflections.
-2. **WaterIntakeAgent (`src/agent.py`)** – LangChain + OpenAI prompts synthesize intake feedback and weekly summaries, demonstrating prompt engineering with deterministic guardrails and safety-leaning responses.
-3. **Persistence layer (`src/database.py`)** – unified helpers for intake logs, goals, reminders, mood entries, habits, and leaderboard analytics, backed by SQLite and initialized automatically.
-4. **API surface (`src/api.py`)** – FastAPI exposes `/log_intake` and `/history/{user_id}`, enabling external clients to inject data while telemetry flows through `src/logger.py`.
+---
 
-## Technology stack
+## 🧩 Project Structure
+
+```
+water-intake-tracker/
+│
+├── dashboard.py
+├── requirements.txt
+├── .env
+│
+├── src/
+│   ├── agent.py
+│   ├── database.py
+│   ├── api.py
+│   └── logger.py
+│
+├── assets/
+│   └── demo.gif
+│
+└── water_tracker.db
+```
+
+---
+
+## 🛠 Technology Stack
+
 - Python 3.10+
-- Streamlit (UI)
-- FastAPI + Uvicorn (API host)
-- LangChain + OpenAI (LLM agent)
-- SQLite (`water_tracker.db`)
-- pandas (data shaping)
-- python-dotenv (config)
+- Streamlit
+- FastAPI + Uvicorn
+- LangChain
+- OpenAI API
+- SQLite
+- pandas
+- python-dotenv
 
-## Operational workflow
-1. Create a virtual environment (`python -m venv .venv`) and activate it (`source .venv/bin/activate`).
-2. Install dependencies: `pip install -r requirements.txt`.
-3. Provide secrets via `.env` (or environment variables): `OPENAI_API_KEY` plus optional `DATABASE_URL`.
-4. Source the environment (`source .env`) and launch Streamlit: `streamlit run dashboard.py`.
-5. Configure a `user_id`, set goals, log intake/mood/habits, review AI feedback, and export CSV summaries.
-6. Start the API for integrations: `uvicorn src.api:app --reload --host 0.0.0.0 --port 8000`, then POST to `/log_intake` or GET `/history/{user_id}` using tools like `curl` or Postman.
+---
 
-## Reliability & observability
-- Tables auto-create on import; `water_tracker.db` sits in the repo root but can be redirected via `DATABASE_URL`.
-- Reminders, mood, and habit logging include defensive checks (e.g., require a user ID, validate CSV schema) so the UI stays resilient.
-- Logging via `src/logger.py` tracks API activity; you can expand it with structured sinks for production monitoring.
-- AI usage is rate-limited by OpenAI; temperature sits at 0.5 to balance freshness and consistency, and you can swap models via `src/agent.py`.
+## ⚙️ Installation
 
-## Future directions
-1. Add scheduled reminders (Celery/APS) and push notifications for users outside the dashboard.
-2. Introduce migrations/Postgres for multi-user deployments while preserving the existing SQLite helpers.
-3. Build automated tests around the API and database helpers, then gate them in CI.
-4. Deploy the stack (Streamlit + FastAPI) on a cloud host and capture a short demo for stakeholders.
+### Clone repository
+
+```bash
+git clone https://github.com/Meet-Amin/water-intake-tracker.git
+cd water-intake-tracker
+```
+
+### Create virtual environment
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+### Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 🔐 Environment Setup
+
+Create `.env` file:
+
+```
+OPENAI_API_KEY=your_openai_key_here
+DATABASE_URL=sqlite:///water_tracker.db
+```
+
+---
+
+## ▶️ Running the App
+
+Start dashboard:
+
+```bash
+streamlit run dashboard.py
+```
+
+Start API:
+
+```bash
+uvicorn src.api:app --reload
+```
+
+API runs at:
+
+```
+http://127.0.0.1:8000
+```
+
+---
+
+## 📡 API Endpoints
+
+### Log intake
+
+```
+POST /log_intake
+```
+
+### Fetch history
+
+```
+GET /history/{user_id}
+```
+
+---
+
+## 📈 Reliability
+
+- Auto database initialization
+- Defensive validation
+- CSV schema checks
+- Structured logging
+- Configurable DB path
+- Safe AI prompt guardrails
+
+---
+
+## 🔮 Future Improvements
+
+- Push notifications
+- Scheduled reminders
+- Multi-user support
+- Automated tests
+- Cloud deployment
+- Mobile integration
+
+---
+
+## 🎯 Purpose
+
+This project showcases:
+
+- AI-powered application design
+- Clean architecture separation
+- LLM integration in workflows
+- Database persistence patterns
+- Production-style Python engineering
+
+Perfect for portfolio & recruiter evaluation.
+
+---
+
+## 👨‍💻 Author
+
+**Meet Amin**  
+AI / ML Engineer (Portfolio Project)
+
+GitHub: https://github.com/Meet-Amin
+
+---
+
+⭐ If you like the project, consider starring the repo!
